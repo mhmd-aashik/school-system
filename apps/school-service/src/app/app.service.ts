@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { UpdateStudentDto } from './dto/update-student.dto';
 
 export interface Student {
   id: number;
@@ -59,6 +60,42 @@ export class StudentService {
 
     this.students.push(student);
     return student;
+  }
+
+  update(id: number, updateStudentDto: UpdateStudentDto): Student {
+    const student = this.findOne(id);
+
+    if (updateStudentDto.email) {
+      this.checkEmailAvailability(updateStudentDto.email, id);
+    }
+
+    Object.assign(student, updateStudentDto);
+
+    return student;
+  }
+
+  remove(id: number): void {
+    const studentIndex = this.students.findIndex(
+      (student) => student.id === id,
+    );
+
+    if (studentIndex === -1) {
+      throw new NotFoundException(`Student with ID ${id} was not found`);
+    }
+
+    this.students.splice(studentIndex, 1);
+  }
+
+  private checkEmailAvailability(email: string, ignoredId?: number): void {
+    const existingStudent = this.students.find(
+      (student) =>
+        student.email.toLowerCase() === email.toLowerCase() &&
+        student.id !== ignoredId,
+    );
+
+    if (existingStudent) {
+      throw new ConflictException('A student with this email already exists');
+    }
   }
 
   private generateId(): number {
