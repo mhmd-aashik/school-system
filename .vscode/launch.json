@@ -4,24 +4,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug @school-system/school-service with Nx",
+      "name": "Debug @school-system/student-service with Nx",
       "runtimeExecutable": "npx",
-      "runtimeArgs": [
-        "nx",
-        "serve",
-        "@school-system/school-service"
-      ],
+      "runtimeArgs": ["nx", "serve", "@school-system/student-service"],
       "env": {
         "NODE_OPTIONS": "--inspect=9229"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "sourceMaps": true,
       "outFiles": [
-        "${workspaceFolder}/apps/school-service/dist/**/*.(m|c|)js",
+        "${workspaceFolder}/apps/student-service/dist/**/*.(m|c|)js",
         "!**/node_modules/**"
       ]
     }

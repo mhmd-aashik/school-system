@@ -1,14 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "out-tsc/@school-system/school-service-e2e",
+    "outDir": "out-tsc/@school-system/student-service-e2e",
     "esModuleInterop": true,
     "noUnusedLocals": false,
     "noImplicitAny": false
   },
-  "include": [
-    "jest.config.ts",
-    "src/**/*.ts"
-  ],
+  "include": ["jest.config.ts", "src/**/*.ts"],
   "references": []
 }

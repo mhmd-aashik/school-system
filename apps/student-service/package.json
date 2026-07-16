@@ -1,5 +1,5 @@
 {
-  "name": "@school-system/school-service",
+  "name": "@school-system/student-service",
   "version": "0.0.1",
   "private": true,
   "nx": {
@@ -11,7 +11,7 @@
           "env": {
             "NODE_ENV": "production"
           },
-          "cwd": "apps/school-service"
+          "cwd": "apps/student-service"
         },
         "configurations": {
           "development": {
@@ -28,8 +28,8 @@
         "cache": true,
         "executor": "@nx/js:prune-lockfile",
         "outputs": [
-          "{workspaceRoot}/apps/school-service/dist/package.json",
-          "{workspaceRoot}/apps/school-service/dist/package-lock.json"
+          "{workspaceRoot}/apps/student-service/dist/package.json",
+          "{workspaceRoot}/apps/student-service/dist/package-lock.json"
         ],
         "options": {
           "buildTarget": "build"
@@ -41,7 +41,7 @@
         ],
         "cache": true,
         "outputs": [
-          "{workspaceRoot}/apps/school-service/dist/workspace_modules"
+          "{workspaceRoot}/apps/student-service/dist/workspace_modules"
         ],
         "executor": "@nx/js:copy-workspace-modules",
         "options": {
@@ -63,15 +63,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@school-system/school-service:build",
+          "buildTarget": "@school-system/student-service:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@school-system/school-service:build:development"
+            "buildTarget": "@school-system/student-service:build:development"
           },
           "production": {
-            "buildTarget": "@school-system/school-service:build:production"
+            "buildTarget": "@school-system/student-service:build:production"
           }
         }
       },

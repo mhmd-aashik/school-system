@@ -1,10 +1,10 @@
 {
-  "name": "@school-system/school-service-e2e",
+  "name": "@school-system/student-service-e2e",
   "version": "0.0.1",
   "private": true,
   "nx": {
     "implicitDependencies": [
-      "@school-system/school-service"
+      "@school-system/student-service"
     ],
     "targets": {
       "e2e": {
@@ -13,11 +13,11 @@
           "{projectRoot}/test-output/jest/coverage"
         ],
         "dependsOn": [
-          "@school-system/school-service:build",
-          "@school-system/school-service:serve"
+          "@school-system/student-service:build",
+          "@school-system/student-service:serve"
         ],
         "options": {
-          "jestConfig": "apps/school-service-e2e/jest.config.cts",
+          "jestConfig": "apps/student-service-e2e/jest.config.cts",
           "passWithNoTests": true
         }
       }
