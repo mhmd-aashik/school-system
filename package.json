@@ -9,9 +9,12 @@
   },
   "private": true,
   "dependencies": {
+    "@grpc/grpc-js": "^1.14.4",
+    "@grpc/proto-loader": "^0.8.1",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/mapped-types": "^2.1.1",
+    "@nestjs/microservices": "^11.1.28",
     "@nestjs/platform-express": "^11.0.0",
     "axios": "^1.6.0",
     "class-transformer": "^0.5.1",
