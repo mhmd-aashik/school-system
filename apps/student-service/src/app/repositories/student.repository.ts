@@ -5,8 +5,7 @@ import {
   DRIZZLE_DATABASE,
   type DrizzleDatabase,
 } from '@school-system/database';
-
-import { NewStudent, Student, students } from './schemas/student.schema';
+import { Student, students, NewStudent } from '../entities/student.schema';
 
 @Injectable()
 export class StudentRepository {

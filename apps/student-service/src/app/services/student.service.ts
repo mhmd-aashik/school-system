@@ -3,11 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { StudentRepository } from './student.repository';
-import { Student } from './schemas/student.schema';
-import { UpdateStudentDto } from './dto/update-student.dto';
-import { CreateStudentDto } from './dto/create-student.dto';
-
+import { Student } from '../entities/student.schema';
+import { UpdateStudentDto } from '../dto/update-student.dto';
+import { CreateStudentDto } from '../dto/create-student.dto';
+import { StudentRepository } from '../repositories/student.repository';
 
 @Injectable()
 export class StudentService {

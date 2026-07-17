@@ -10,9 +10,9 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { StudentService } from './app.service';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { UpdateStudentDto } from './dto/update-student.dto';
+import { StudentService } from '../services/student.service';
+import { CreateStudentDto } from '../dto/create-student.dto';
+import { UpdateStudentDto } from '../dto/update-student.dto';
 
 @Controller('students')
 export class StudentController {

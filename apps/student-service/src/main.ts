@@ -5,7 +5,7 @@
 
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { StudentModule } from './app/app.module';
+import { StudentModule } from './app/student.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(StudentModule);

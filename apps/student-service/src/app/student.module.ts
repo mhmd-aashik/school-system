@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { StudentController } from './app.controller';
-import { StudentService } from './app.service';
+import { StudentController } from './controllers/student.controller';
+import { StudentService } from './services/student.service';
 import { SchoolSystemDatabaseModule } from '@school-system/database';
-import { StudentRepository } from './student.repository';
+import { StudentRepository } from './repositories/student.repository';
 
 @Module({
   imports: [SchoolSystemDatabaseModule],
