@@ -33,17 +33,17 @@ export class StudentController {
     return this.studentService.findOne(+id);
   }
 
-  // @Patch(':id')
-  // update(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @Body() updateStudentDto: UpdateStudentDto,
-  // ) {
-  //   return this.studentService.update(id, updateStudentDto);
-  // }
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateStudentDto: UpdateStudentDto,
+  ) {
+    return this.studentService.update(id, updateStudentDto);
+  }
 
-  // @Delete(':id')
-  // @HttpCode(HttpStatus.NO_CONTENT)
-  // remove(@Param('id', ParseIntPipe) id: number): void {
-  //   this.studentService.remove(id);
-  // }
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.studentService.remove(id);
+  }
 }
