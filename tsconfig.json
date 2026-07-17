@@ -23,15 +23,6 @@
     },
     {
       "path": "./libs/grpc"
-    },
-    {
-      "path": "./libs/protos"
-    },
-    {
-      "path": "./libs/proto"
-    },
-    {
-      "path": "./libs/grpc"
     }
   ]
 }

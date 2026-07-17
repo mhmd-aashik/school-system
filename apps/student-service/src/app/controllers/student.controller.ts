@@ -13,6 +13,7 @@ import {
 import { StudentService } from '../services/student.service';
 import { CreateStudentDto } from '../dto/create-student.dto';
 import { UpdateStudentDto } from '../dto/update-student.dto';
+import { GrpcMethod } from '@nestjs/microservices';
 
 @Controller('students')
 export class StudentController {
@@ -23,9 +24,12 @@ export class StudentController {
     return this.studentService.create(createStudentDto);
   }
 
-  @Get()
-  findAll() {
-    return this.studentService.findAll();
+  @GrpcMethod('StudentService', 'GetStudents')
+  async getStudents() {
+    const students = await this.studentService.findAll();
+    return {
+      students,
+    };
   }
 
   @Get(':id')
