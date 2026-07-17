@@ -1,9 +1,16 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { students } from './schemas/student.schema';
+import { eq } from 'drizzle-orm';
+import {
+  DRIZZLE_DATABASE,
+  type DrizzleDatabase,
+} from '@school-system/database';
 import { UpdateStudentDto } from './dto/update-student.dto';
 
 export interface Student {
@@ -15,94 +22,128 @@ export interface Student {
 
 @Injectable()
 export class StudentService {
-  private students: Student[] = [
-    {
-      id: 1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-    },
-    {
-      id: 2,
-      firstName: 'Sarah',
-      lastName: 'Smith',
-      email: 'sarah@example.com',
-    },
-  ];
+  constructor(
+    @Inject(DRIZZLE_DATABASE)
+    private readonly database: DrizzleDatabase,
+  ) {}
 
-  findAll(): Student[] {
-    return this.students;
+  async findAll(): Promise<Student[]> {
+    return this.database.select().from(students).orderBy(students.id);
   }
 
-  findOne(id: number): Student {
-    const student = this.students.find((item) => item.id === id);
+  async findOne(id: number): Promise<Student> {
+    const result = await this.database
+      .select()
+      .from(students)
+      .where(eq(students.id, id))
+      .limit(1);
+
+    const student = result[0];
 
     if (!student) {
       throw new NotFoundException(`Student with ID ${id} was not found`);
     }
+
     return student;
   }
 
-  create(createStudentDto: CreateStudentDto): Student {
-    const existingStudent = this.students.find(
-      (student) =>
-        student.email.toLowerCase() === createStudentDto.email.toLowerCase(),
-    );
+  async create(createStudentDto: CreateStudentDto): Promise<Student> {
+    const normalizedEmail = createStudentDto.email.trim().toLowerCase();
 
-    if (existingStudent) {
+    const existingStudent = await this.database
+      .select({ id: students.id })
+      .from(students)
+      .where(eq(students.email, normalizedEmail))
+      .limit(1);
+
+    if (existingStudent.length > 0) {
       throw new ConflictException('A student with this email already exists');
     }
 
-    const student: Student = {
-      id: this.generateId(),
-      ...createStudentDto,
-    };
+    const insertedStudents = await this.database
+      .insert(students)
+      .values({
+        firstName: createStudentDto.firstName.trim(),
+        lastName: createStudentDto.lastName.trim(),
+        email: normalizedEmail,
+      })
+      .returning();
 
-    this.students.push(student);
-    return student;
-  }
+    const student = insertedStudents[0];
 
-  update(id: number, updateStudentDto: UpdateStudentDto): Student {
-    const student = this.findOne(id);
-
-    if (updateStudentDto.email) {
-      this.checkEmailAvailability(updateStudentDto.email, id);
+    if (!student) {
+      throw new Error('Student could not be created');
     }
 
-    Object.assign(student, updateStudentDto);
-
     return student;
   }
 
-  remove(id: number): void {
-    const studentIndex = this.students.findIndex(
-      (student) => student.id === id,
-    );
+  async update(
+    id: number,
+    updateStudentDto: UpdateStudentDto,
+  ): Promise<Student> {
+    await this.findOne(id);
 
-    if (studentIndex === -1) {
+    const updateData: Partial<{
+      firstName: string;
+      lastName: string;
+      email: string;
+      updatedAt: Date;
+    }> = {
+      updatedAt: new Date(),
+    };
+
+    if (updateStudentDto.firstName !== undefined) {
+      updateData.firstName = updateStudentDto.firstName.trim();
+    }
+
+    if (updateStudentDto.lastName !== undefined) {
+      updateData.lastName = updateStudentDto.lastName.trim();
+    }
+
+    if (updateStudentDto.email !== undefined) {
+      const normalizedEmail = updateStudentDto.email.trim().toLowerCase();
+
+      const existingStudent = await this.database
+        .select({ id: students.id })
+        .from(students)
+        .where(eq(students.email, normalizedEmail))
+        .limit(1);
+
+      const emailOwner = existingStudent[0];
+
+      if (emailOwner && emailOwner.id !== id) {
+        throw new ConflictException('A student with this email already exists');
+      }
+
+      updateData.email = normalizedEmail;
+    }
+
+    const updatedStudents = await this.database
+      .update(students)
+      .set(updateData)
+      .where(eq(students.id, id))
+      .returning();
+
+    const student = updatedStudents[0];
+
+    if (!student) {
       throw new NotFoundException(`Student with ID ${id} was not found`);
     }
 
-    this.students.splice(studentIndex, 1);
+    return student;
   }
 
-  private checkEmailAvailability(email: string, ignoredId?: number): void {
-    const existingStudent = this.students.find(
-      (student) =>
-        student.email.toLowerCase() === email.toLowerCase() &&
-        student.id !== ignoredId,
-    );
+  async remove(id: number): Promise<void> {
+    const deletedStudents = await this.database
+      .delete(students)
+      .where(eq(students.id, id))
+      .returning({ id: students.id });
 
-    if (existingStudent) {
-      throw new ConflictException('A student with this email already exists');
+    const deletedStudent = deletedStudents[0];
+
+    if (!deletedStudent) {
+      throw new NotFoundException(`Student with ID ${id} was not found`);
     }
-  }
-
-  private generateId(): number {
-    if (this.students.length === 0) {
-      return 1;
-    }
-
-    return Math.max(...this.students.map((student) => student.id)) + 1;
   }
 }

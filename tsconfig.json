@@ -4,13 +4,13 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/student-service-e2e"
-    },
-    {
       "path": "./apps/student-service"
     },
     {
       "path": "./libs/database"
+    },
+    {
+      "path": "./apps/school-service-e2e"
     }
   ]
 }

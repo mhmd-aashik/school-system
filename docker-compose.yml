@@ -4,8 +4,8 @@ services:
     container_name: school-student-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: school_user
-      POSTGRES_PASSWORD: school_password
+      POSTGRES_USER: student_user
+      POSTGRES_PASSWORD: student_password
       POSTGRES_DB: student_db
     ports:
       - '5432:5432'

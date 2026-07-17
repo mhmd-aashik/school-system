@@ -12,5 +12,7 @@
     },
     "./package.json": "./package.json"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@school-system/database": "*"
+  }
 }

@@ -8,10 +8,10 @@ export const databaseProvider: Provider = {
   provide: DRIZZLE_DATABASE,
 
   useFactory: () => {
-    const connectionString = process.env.DATABASE_URL;
+    const connectionString = process.env.STUDENT_DATABASE_URL;
 
     if (!connectionString) {
-      throw new Error('DATABASE_URL is not defined');
+      throw new Error('STUDENT_DATABASE_URL is not defined');
     }
 
     const pool = new Pool({

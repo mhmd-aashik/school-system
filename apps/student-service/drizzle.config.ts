@@ -1,9 +1,8 @@
+import { defineConfig } from 'drizzle-kit';
 import 'dotenv/config';
 
-import { defineConfig } from 'drizzle-kit';
-
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not defined');
+if (!process.env.STUDENT_DATABASE_URL) {
+  throw new Error('STUDENT_DATABASE_URL is not defined');
 }
 
 export default defineConfig({
@@ -11,7 +10,7 @@ export default defineConfig({
   schema: './apps/student-service/src/app/schemas/*.schema.ts',
   out: './drizzle/student-service',
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: process.env.STUDENT_DATABASE_URL,
   },
   strict: true,
   verbose: true,
