@@ -29,6 +29,9 @@
     },
     {
       "path": "./libs/proto"
+    },
+    {
+      "path": "./libs/grpc"
     }
   ]
 }
