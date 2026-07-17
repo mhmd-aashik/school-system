@@ -1,44 +1,24 @@
 import {
   ConflictException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { students } from './schemas/student.schema';
-import { eq } from 'drizzle-orm';
-import {
-  DRIZZLE_DATABASE,
-  type DrizzleDatabase,
-} from '@school-system/database';
+import { StudentRepository } from './student.repository';
+import { Student } from './schemas/student.schema';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { CreateStudentDto } from './dto/create-student.dto';
 
-export interface Student {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
 
 @Injectable()
 export class StudentService {
-  constructor(
-    @Inject(DRIZZLE_DATABASE)
-    private readonly database: DrizzleDatabase,
-  ) {}
+  constructor(private readonly studentRepository: StudentRepository) {}
 
   async findAll(): Promise<Student[]> {
-    return this.database.select().from(students).orderBy(students.id);
+    return this.studentRepository.findAll();
   }
 
   async findOne(id: number): Promise<Student> {
-    const result = await this.database
-      .select()
-      .from(students)
-      .where(eq(students.id, id))
-      .limit(1);
-
-    const student = result[0];
+    const student = await this.studentRepository.findById(id);
 
     if (!student) {
       throw new NotFoundException(`Student with ID ${id} was not found`);
@@ -50,26 +30,18 @@ export class StudentService {
   async create(createStudentDto: CreateStudentDto): Promise<Student> {
     const normalizedEmail = createStudentDto.email.trim().toLowerCase();
 
-    const existingStudent = await this.database
-      .select({ id: students.id })
-      .from(students)
-      .where(eq(students.email, normalizedEmail))
-      .limit(1);
+    const existingStudent =
+      await this.studentRepository.findByEmail(normalizedEmail);
 
-    if (existingStudent.length > 0) {
+    if (existingStudent) {
       throw new ConflictException('A student with this email already exists');
     }
 
-    const insertedStudents = await this.database
-      .insert(students)
-      .values({
-        firstName: createStudentDto.firstName.trim(),
-        lastName: createStudentDto.lastName.trim(),
-        email: normalizedEmail,
-      })
-      .returning();
-
-    const student = insertedStudents[0];
+    const student = await this.studentRepository.create({
+      firstName: createStudentDto.firstName.trim(),
+      lastName: createStudentDto.lastName.trim(),
+      email: normalizedEmail,
+    });
 
     if (!student) {
       throw new Error('Student could not be created');
@@ -84,12 +56,12 @@ export class StudentService {
   ): Promise<Student> {
     await this.findOne(id);
 
-    const updateData: Partial<{
-      firstName: string;
-      lastName: string;
-      email: string;
+    const updateData: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
       updatedAt: Date;
-    }> = {
+    } = {
       updatedAt: new Date(),
     };
 
@@ -104,28 +76,17 @@ export class StudentService {
     if (updateStudentDto.email !== undefined) {
       const normalizedEmail = updateStudentDto.email.trim().toLowerCase();
 
-      const existingStudent = await this.database
-        .select({ id: students.id })
-        .from(students)
-        .where(eq(students.email, normalizedEmail))
-        .limit(1);
+      const existingStudent =
+        await this.studentRepository.findByEmail(normalizedEmail);
 
-      const emailOwner = existingStudent[0];
-
-      if (emailOwner && emailOwner.id !== id) {
+      if (existingStudent && existingStudent.id !== id) {
         throw new ConflictException('A student with this email already exists');
       }
 
       updateData.email = normalizedEmail;
     }
 
-    const updatedStudents = await this.database
-      .update(students)
-      .set(updateData)
-      .where(eq(students.id, id))
-      .returning();
-
-    const student = updatedStudents[0];
+    const student = await this.studentRepository.update(id, updateData);
 
     if (!student) {
       throw new NotFoundException(`Student with ID ${id} was not found`);
@@ -135,14 +96,9 @@ export class StudentService {
   }
 
   async remove(id: number): Promise<void> {
-    const deletedStudents = await this.database
-      .delete(students)
-      .where(eq(students.id, id))
-      .returning({ id: students.id });
+    const deleted = await this.studentRepository.delete(id);
 
-    const deletedStudent = deletedStudents[0];
-
-    if (!deletedStudent) {
+    if (!deleted) {
       throw new NotFoundException(`Student with ID ${id} was not found`);
     }
   }
