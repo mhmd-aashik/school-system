@@ -52,7 +52,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/student-service-e2e/**/*"]
+      "exclude": ["apps/student-service-e2e/**/*", "apps/api-gateway-e2e/**/*"]
     }
   ],
   "targetDefaults": {
